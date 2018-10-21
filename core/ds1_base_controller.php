@@ -538,7 +538,7 @@ class ds1_base_controller
 
         // specialne pro admina
         if (!isset($params["admin_breadcrumbs"])) $params["admin_breadcrumbs"] = "";
-        if (!isset($params["admin_orders_new"])) $params["admin_orders_new"] = 0;       // pocet novych obj.
+        if (!isset($params["alert_number_new"])) $params["alert_number_new"] = 0;       // pocet novych obj.
 
         // pouzit twig?
         if (DS1_MAIN_TEMPLATE_ADMIN_USE_TWIG)
