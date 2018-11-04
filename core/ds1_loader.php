@@ -22,6 +22,8 @@ class ds1_loader {
         // dle admina nebo webu
         $path_start = DS1_PROJECT_ROOT;
 
+        // TODO test, jestli je definovana konstanta DS1_SELECTED_CONFIGURATION
+
         // chci vratit __DIR__.'/../simple_eshop3_local/config/routes.inc.php'
         if ($type == "selected") {
             $path = $path_start . DS1_DIR_ROOT_LOCAL . "config/ds1_" . DS1_SELECTED_CONFIGURATION . "_config.inc.php";

@@ -19,7 +19,7 @@
                 ?>
 
                 <h1>Login</h1>
-                <p class="text-muted">Přihlášení do administrace e-shopu.</p>
+                <p class="text-muted">Přihlášení do administrace systému.</p>
                 <div class="input-group mb-4">
                     <div class="input-group-prepend">
                                         <span class="input-group-text">

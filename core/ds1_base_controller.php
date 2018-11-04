@@ -341,7 +341,17 @@ class ds1_base_controller
         // pokud neexistuje lokalni, tak zkusit globalni verzi
         if (!file_exists($template_path)) {
             $template_path = DS1_DIR_TEMPLATES_PHP_GLOBAL . $template_url;
+
+            // zkusit samostatne
+            if (!file_exists($template_path)) {
+                $template_path = $template_url;
+                if (file_exists($template_path)) {
+                    // je to ok
+                }
+            }
         }
+
+
 
         // text existence sablony
         if (file_exists($template_path) && !is_dir($template_path))
