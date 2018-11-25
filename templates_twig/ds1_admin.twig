@@ -19,12 +19,14 @@
     <link href="{{ base_url }}node_modules/@coreui/coreui/dist/css/coreui.css" rel="stylesheet">
     <link href="{{ base_url }}template/css/vendors/coreui-pace.css" rel="stylesheet">
 
-    <!-- jstree plugin -->
-    <link rel="stylesheet" href="{{ base_url }}node_modules/jstree/dist/themes/default/style.css" />
-
     <!-- jQuery je lepsi mit nahore, usnadni to praci -->
     <script src="{{ base_url }}node_modules/jquery/dist/jquery.min.js"></script>
-    <script src="{{ base_url }}node_modules/jstree/dist/jstree.js"></script>
+
+    {# jsTree zatim nepotrebuji
+        <!-- jstree plugin -->
+        <link rel="stylesheet" href="{{ base_url }}node_modules/jstree/dist/themes/default/style.css" />
+        <script src="{{ base_url }}node_modules/jstree/dist/jstree.js"></script>
+    #}
 </head>
 <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show" data-ng-app="ds1">
     <header class="app-header navbar">
@@ -161,6 +163,35 @@
                 <!-- START admin_breadcrumbs -->
                 {{ admin_breadcrumbs | raw }}
                 <!-- KONEC admin_breadcrumbs -->
+
+                {% if result_msg != "" %}
+                <!-- START info zpravy -->
+                    <div class="container-fluid">
+
+                        {% if result_ok == true %}
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <strong>OK:</strong> {{ result_msg | raw }}
+
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endif %}
+
+                        {% if result_ok == false %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong>Chyba:</strong> {{ result_msg | raw }}
+
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                <!-- KONEC info zpravy -->
+                {% endif %}
+
 
                 {{ content | raw }}
         </main>
