@@ -603,6 +603,43 @@ class ds1_base_controller
     // ***************************************************************************************************
 
     /**
+     * Univerzalni metoda, ktera prevede datum z defaultniho formatu DB do formatu pro CR.
+     *
+     * @param $date_string
+     * @param string $input_format
+     * @param string $output_format
+     * @return false|string|void
+     */
+    public function helperFormatDate($date_string, $input_format = "Y-m-d", $output_format = 'j. n. Y') {
+
+        // pokud prazdne, tak vratim prazdny retezec
+        if (trim($date_string) == "") return;
+
+        // pro experimenty
+        //$date = date_create_from_format("Y-m-d", "1990-01-01");
+
+        // prevedu vstupni datum
+        $date = date_create_from_format($input_format, $date_string);
+
+        if ($date == false) {
+            //echo "nepovedlo prevest";
+            return;
+        }
+        else {
+            $date_for_output = date_format($date, $output_format);
+            return $date_for_output;
+        }
+    }
+
+    /**
+     * Testuje, jestli je datum v minulosti.
+     * @param $date
+     */
+    public function helperIsDateInPast($date) {
+
+    }
+
+    /**
      * Pomocna metoda pro zobrazeni dat v tabulce. Často se opakuje.
      *
      * @param $data
