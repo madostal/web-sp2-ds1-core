@@ -603,7 +603,47 @@ class ds1_base_controller
     // ***************************************************************************************************
 
     /**
-     * Univerzalni metoda, ktera prevede datum z defaultniho formatu DB do formatu pro CR.
+     * Automaticka metoda, ktera prevede datum z defaultniho formatu DB do formatu pro CR.
+     *
+     * @param $date_string - datum nebo datum a cas
+     * @return false|string|void
+     */
+    public function helperFormatDateAuto($date_string)
+    {
+        // pokud prazdne, tak vratim prazdny retezec
+        if (trim($date_string) == "") return;
+
+        // pro experimenty
+        //$date = date_create_from_format("Y-m-d", "1990-01-01");
+
+        // prevedu vstupni datum
+        $input_format = "Y-m-d"; // standardni date z DB
+        $date = date_create_from_format($input_format, $date_string);
+
+        if ($date == false) {
+            //echo "nepovedlo prevest";
+
+            // zkusit, jestli to neni datetime
+            $input_format = "Y-m-d H:i:s";
+            $date = date_create_from_format($input_format, $date_string);
+            if ($date != false) {
+                $output_format = 'j. n. Y H:i';
+                $date_for_output = date_format($date, $output_format);
+
+                return $date_for_output;
+            }
+
+            return;
+        }
+        else {
+            $output_format = 'j. n. Y';
+            $date_for_output = date_format($date, $output_format);
+            return $date_for_output;
+        }
+    }
+
+    /**
+     * Striktni univerzalni metoda, ktera prevede datum z defaultniho formatu DB do formatu pro CR.
      *
      * @param $date_string
      * @param string $input_format
