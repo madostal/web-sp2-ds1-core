@@ -612,6 +612,8 @@ class ds1_base_controller
     {
         // pokud prazdne, tak vratim prazdny retezec
         if (trim($date_string) == "") return;
+        if (trim($date_string) == "0000-00-00 00:00:00") return;
+        if (trim($date_string) == "0000-00-00") return;
 
         // pro experimenty
         //$date = date_create_from_format("Y-m-d", "1990-01-01");
@@ -654,6 +656,8 @@ class ds1_base_controller
 
         // pokud prazdne, tak vratim prazdny retezec
         if (trim($date_string) == "") return;
+        if (trim($date_string) == "0000-00-00 00:00:00") return;
+        if (trim($date_string) == "0000-00-00") return;
 
         // pro experimenty
         //$date = date_create_from_format("Y-m-d", "1990-01-01");
