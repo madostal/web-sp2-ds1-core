@@ -19,8 +19,14 @@
     <link href="{{ base_url }}node_modules/@coreui/coreui/dist/css/coreui.css" rel="stylesheet">
     <link href="{{ base_url }}template/css/vendors/coreui-pace.css" rel="stylesheet">
 
-    <!-- jQuery je lepsi mit nahore, usnadni to praci -->
-    <script src="{{ base_url }}node_modules/jquery/dist/jquery.min.js"></script>
+    <!-- angucomplete - autocomplete -->
+    <link rel="stylesheet" href="{{ base_url }}node_modules/angucomplete-alt/angucomplete-alt.css"/>
+
+    <!-- jQuery a angular je lepsi mit nahore, usnadni to praci -->
+    <script src="{{ base_url }}node_modules/jquery/dist/jquery.js"></script>
+
+    <script src="{{ base_url }}node_modules/angular/angular.js"></script>
+    <script src="{{ base_url }}node_modules/angucomplete-alt/angucomplete-alt.js"></script>
 
     {# jsTree zatim nepotrebuji
         <!-- jstree plugin -->
@@ -505,11 +511,19 @@
 
     <script src="{{ base_url }}node_modules/chart.js/dist/Chart.js"></script>
     <script src="{{ base_url }}node_modules/@coreui/coreui-plugin-chartjs-custom-tooltips/dist/js/custom-tooltips.min.js"></script>
+
+
+
+    <script src="{{ base_url }}template/js/ds1_autocomplete.js"></script>
+
+    <!--
     <script src="{{ base_url }}template/js/dashboard_demo_main.js"></script>
+    -->
 
     <!-- jstree s Angularem -->
-    <script src="{{ base_url }}node_modules/angular/angular.js"></script>
+    <!--
     <script src="{{ base_url }}template/js/se3_angular_admin.js"></script>
+    -->
 
     <!-- ck editor-->
     <script src="{{ base_url }}node_modules/ckeditor/ckeditor.js"></script>

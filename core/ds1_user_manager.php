@@ -58,25 +58,6 @@ class ds1_user_manager extends ds1_base_model
     }
 
 
-    /**
-     * Metoda pro uzivatele pro nastaveni zasilani newsletteru. Muze provest napr. z uziv. uctu
-     */
-    public function webUpdateNewsletter($user_id, $posilat_newsletter) {
-        $user_id += 0;
-        $posilat_newsletter += 0;
-
-        $table_name = TABLE_USERS_ADMIN;
-        $limit_string = "limit 1";
-        $where_array = array();
-        $where_array[] = $this->DBHelperGetWhereItem("id", $user_id);
-
-        $data = array();
-        $data["posilat_newsletter"] = $posilat_newsletter;
-
-        $ok = $this->DBUpdate($table_name, $where_array, $data, $limit_string);
-        return $ok;
-    }
-
 
     public function CheckPasswordForUser($user_id, $heslo) {
         $user_id += 0;
@@ -403,7 +384,92 @@ class ds1_user_manager extends ds1_base_model
     // ************************************************************************************
 
     /**
-     * Admin - nacist uzivatele eshopu.
+     * Test existence uzivatele specialne pro pridavani noveho obyvatele.
+     *
+     * @param $params - pole hodnot pro hledani
+     * @return bool
+     */
+    public function adminExistsUzivatelByParams($uzivatel) {
+        $table_name = TABLE_USERS_ADMIN;
+
+        $where_array = array();
+
+        // prihodit tam vsechny podminky
+        if ($uzivatel != null){
+            foreach ($uzivatel as $key => $value) {
+                $where_array[] = $this->DBHelperGetWhereItem("$key", $uzivatel[$key]);
+            }
+
+            $limit_pom = "limit 1";
+            $row = $this->DBSelectOne($table_name, "*", $where_array, $limit_pom);
+            //echo "uziv by params";
+            //printr($row);
+
+            if ($row != null)
+                return true;
+            else
+                return false;
+        }
+
+        return null;
+    }
+
+    /**
+     * Admin metoda, takze tady NENI podminka na smazano.
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function adminGetItemByID($id) {
+        $id += 0;
+
+        $table_name = TABLE_USERS_ADMIN;
+        $where_array = array();
+        $where_array[] = $this->DBHelperGetWhereItem("id", $id);
+        $limit_pom = "limit 1";
+
+        $row = $this->DBSelectOne($table_name, "*", $where_array, $limit_pom);
+        //printr($row);
+
+        return $row;
+    }
+
+    public function adminInsertItem($item) {
+        $id = $this->DBInsert(TABLE_USERS_ADMIN, $item);
+        return $id;
+    }
+
+    // vytvorit uzivatele dle insert formu
+    public function adminInsertUser($item) {
+        //printr($item);
+        if (!key_exists("login", $item)) return;
+        if (!key_exists("heslo", $item)) return;
+        if (!key_exists("heslo2", $item)) return;
+
+        // hesla nesouhlasi
+        if ($item["heslo"] != $item["heslo2"]) return;
+
+        // musim provest fixaci
+        $user = array();
+        $user["login"] = $item["login"];
+        $user["password_bcrypt"] = $this->bcryptPassword($item["heslo"]);
+        $user["datum_vytvoreni"] = date("Y-m-d H:i:s");
+
+        $id = $this->DBInsert(TABLE_USERS_ADMIN, $user);
+        return $id;
+    }
+
+    public function adminUpdateItem($id, $item) {
+        $where_array = array();
+        $where_array[] = array("column" => "id", "value" => $id, "symbol" => "=");
+
+        $ok = $this->DBUpdate(TABLE_USERS_ADMIN, $where_array, $item, "limit 1");
+        return $ok;
+    }
+
+
+    /**
+     * Admin - nacist uzivatele. Bez smazanych.
      *
      * @param string $type - data nebo count
      * @param int $page
@@ -433,6 +499,7 @@ class ds1_user_manager extends ds1_base_model
         $order_by_pom = array();
         $order_by_pom[] = array("column" => $order_by, "sort" => $order_by_direction);
         $where_array = array();
+        $where_array[] = array("column" => "smazano", "value" => 0, "symbol" => "=");       // skryt smazane uzivatele
 
         $rows = $this->DBSelectAll($table_name, $columns, $where_array, $limit_pom, $order_by_pom);
         //printr($rows);

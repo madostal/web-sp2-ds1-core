@@ -40,6 +40,7 @@ class ds1_user_admin extends ds1_base_model
         $table_name = TABLE_USERS_ADMIN;
         $where_array = array();
         $where_array[] = array("column" => "login", "value" => $login, "symbol" => "=");
+        $where_array[] = array("column" => "smazano", "value" => 0, "symbol" => "=");   // uzivatel nesmi byt smazan, pouzije se v loginu
         //printr($where_array);
 
         $user = $this->DBSelectOne($table_name, "*", $where_array, "limit 1");
