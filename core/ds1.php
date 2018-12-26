@@ -54,6 +54,21 @@ class ds1 extends ds1_base_model
 
     public function setModulesForAdmin($modules) {
         $this->modules_admin = $modules;
+
+        // nacist konfiguraci k modulum = settings_file, kde jsou konstanty pro vsechny moduly
+        if ($modules != null)
+            foreach ($modules as $module) {
+                if (isset($module["settings_file"])) {
+                    //printr($module);
+                    $settings_file = DS1_DIR_ADMIN_MODULES_FROM_ADMIN.$module["name"]."/".$module["settings_file"].".php";
+                    //printr($settings_file);
+
+                    if (file_exists($settings_file) && is_file($settings_file)) {
+                        // nacist soubor
+                        include_once($settings_file);
+                    }
+                }
+            }
     }
 
     public function getModulesForAdmin() {
