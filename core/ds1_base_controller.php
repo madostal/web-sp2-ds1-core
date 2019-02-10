@@ -335,6 +335,56 @@ class ds1_base_controller
     }
 
 
+    /**
+     * Typicky nacist konfiguraci z jsonu pro danou sablonu.
+     * @param $template_url
+     * @param array $params
+     *
+     * @return bool|mixed|string
+     */
+    public function getConfigForPhpTemplate($template_path, $params = array())
+    {
+        if (!file_exists($template_path)) {
+            $template_path = DS1_DIR_TEMPLATES_PHP_LOCAL . $template_url;
+        }
+
+        // pokud neexistuje lokalni, tak zkusit globalni verzi
+        if (!file_exists($template_path)) {
+            $template_path = DS1_DIR_TEMPLATES_PHP_GLOBAL . $template_url;
+        }
+
+        // urcit vstupni format konfigurace
+        $input_format = "plain";
+        $file_extension = pathinfo($template_path, PATHINFO_EXTENSION);
+
+        if ($file_extension == "json") {
+            $input_format = "json";
+        }
+
+        // text existence sablony
+        if (file_exists($template_path) && !is_dir($template_path))
+        {
+            $config = file_get_contents($template_path);
+
+            if ($input_format == "plain") {
+                // rovnou vratit
+                return $config;
+            }
+            else if ($input_format == "json") {
+                $config = json_decode($config, true);
+                return $config;
+            }
+        }
+        else {
+            if (DS1_DOMAIN_IN_PRODUCTION)
+                return "Error: template config not found";
+            else
+                return "Error: template config (url: $template_url, path: $template_path) not found";
+        }
+    }
+
+
+
     private function renderPhpTemplate($template_url, $params = array()) {
         $template_path = DS1_DIR_TEMPLATES_PHP_LOCAL . $template_url;
 
@@ -722,6 +772,56 @@ class ds1_base_controller
         else {
             echo $content;
         }
+    }
+
+
+    public function helperGetStringBetween($string, $start, $end){
+        $string = ' ' . $string;
+        $ini = strpos($string, $start);
+        if ($ini == 0) return '';
+        $ini += strlen($start);
+        $len = strpos($string, $end, $ini) - $ini;
+        return substr($string, $ini, $len);
+    }
+
+
+    /**
+     * Tato funkce nahradi sablonu jejimi hodnotami z DB. Pouziti napr. v detailu obyvatele v titulku acordionu.
+     * @param $string
+     * @param $db_object
+     * @return mixed
+     */
+    function helperStringReplaceMarksWithDbValues($string, $db_object, $params = array()) {
+
+        // keys_dates - ktera pole jsou datumy a je treba je konvertovat
+        if (array_key_exists("keys_dates", $params)) {
+            $keys_dates = $params["keys_dates"];
+        }
+        else {
+            $keys_dates = array();
+        }
+
+        if ($string != "")
+        while (strpos($string, "[") !== false) {
+            $db_key = $this->helperGetStringBetween($string, "[", "]");
+
+            // replace with value
+            if (array_key_exists($db_key, $db_object)) {
+                // nahradit hodnotou
+                $string = str_replace("[".$db_key."]", $db_object[$db_key], $string);
+
+                // pokud je to datum, tak prevest do podoby datumu
+                if (in_array($db_key, $keys_dates)) {
+                    $string = $this->helperFormatDate($string);
+                }
+            }
+            else {
+                // zlikvidovat a nahradit value s vykricniky
+                $string = str_replace("[".$db_key."]", "!".$db_key."!", $string);
+            }
+        }
+
+        return $string;
     }
 
     // ***************************************************************************************************
