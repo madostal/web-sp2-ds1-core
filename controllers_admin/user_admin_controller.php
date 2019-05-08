@@ -9,7 +9,9 @@ namespace ds1\controllers_admin;
 
 use Symfony\Component\HttpFoundation\Request;
 use ds1\core\ds1_base_controller;
+
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class user_admin_controller extends ds1_base_controller
@@ -117,6 +119,82 @@ class user_admin_controller extends ds1_base_controller
         // vypsat hlavni template
         return $this->renderAdminTemplate($main_params, "login");
     }
+
+    /**
+     * API Login.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function apiLoginAction(Request $request){
+
+        // zavolat metodu rodice, ktera provede obecne hlavni kroky
+        parent::indexAction($request, "");
+
+        // zprava o pokusu o prihlaseni
+        $result_msg = "";
+        $result_ok = false;
+
+        // TEST, jestli JE uzivatel prihlasen. Pokud ANO, tak vratit ze ok
+        if ($this->ds1->user_admin->isAdminLogged()) {
+            $result_msg = "OK: uživatel je přihlášen.";
+            $result_ok = true;
+        }
+
+        $json_data = file_get_contents("php://input");
+        $post_data = (array) json_decode($json_data);   // zaroven pretypovat na pole
+        //printr($post_data);
+
+
+        if (array_key_exists("login", $post_data)) $login = $post_data["login"];
+        else $login = "";
+
+        if (array_key_exists("password", $post_data)) $password = $post_data["password"];
+        else $password = "";
+
+        if (array_key_exists("api_token", $post_data)) $api_token = $post_data["api_token"];
+        else $api_token = "";
+
+        // verit api token DS1_API_TOKEN, JINAK SE DAL NEBAVIT
+        if ($api_token == DS1_API_TOKEN) {
+            $ok = true;
+        }
+        else {
+            $ok = false;
+            $result_ok = false;
+            $result_msg = "API token error.";
+        }
+
+        // zavolat model, pokud sedi api token
+        if ($ok) {
+                //printr($this->ds1->user_admin);
+                $ok = $this->ds1->user_admin->Login($login, $password);
+
+                if ($ok) {
+                    // nastavit do session prihlaseneho uzivatele
+                    $result_msg = "Přihlášení proběhlo úspěšně";
+                    $result_ok = true;
+                }
+                else
+                {
+                    // chyba, nepovedlo se prihlasit
+                    $result_msg = "Špatný uživatel nebo heslo";
+                    $result_ok = false;
+                }
+        }
+
+        // vratit vysledek
+        $result["result_msg"] = $result_msg;
+        $result["result_ok"] = $result_ok;
+        $data_for_response = json_encode($result);
+
+        // vratit v html
+        //return new Response($data_for_response);
+
+        // vratit json
+        return new JsonResponse($data_for_response);
+    }
+
 
     /**
      * Logout.

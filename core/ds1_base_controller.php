@@ -268,8 +268,10 @@ class ds1_base_controller
     /**
      * Tato metoda zkontroluje, jestli je admin prihlasen a pokud ne,
      * tak ho posle na login page.
+     *
+     * $from - web nebo api, podle toho se bude lisit vystup
      */
-    public function checkAdminLogged() {
+    public function checkAdminLogged($from = "web") {
 
         if ($this->ds1->user_admin->isAdminLogged()) {
             // ano, je prihlasen - je to OK, nechat ho
@@ -279,12 +281,24 @@ class ds1_base_controller
             // NE, neni prihlasen - redirect na login page
             // echo "ADMIN NENI PRIHLASEN. NELZE POKRACOVAT.";
 
-            // NATVRDO HO PRESMEROVAT na LOGIN PAGE PRO ADMINA
-            //$admin_login_url = $this->makeUrlByRoute(DS1_ROUTE_ADMIN_LOGIN); // nepridava tam index.php
-            $admin_login_url = $this->webGetBaseUrlLink(). "login";
-            //echo $admin_login_url; exit;
+            if ($from == "web") {
+                // NATVRDO HO PRESMEROVAT na LOGIN PAGE PRO ADMINA
+                //$admin_login_url = $this->makeUrlByRoute(DS1_ROUTE_ADMIN_LOGIN); // nepridava tam index.php
+                $admin_login_url = $this->webGetBaseUrlLink(). "login";
+                //echo $admin_login_url; exit;
 
-            $this->redirectUser($admin_login_url);
+                $this->redirectUser($admin_login_url);
+            }
+           else if ($from == "api") {
+                // chyba v jsonu
+               $data_for_response = array();
+               $data_for_response["result_ok"] = false;
+               $data_for_response["result_msg"] = "Error: user not logged.";
+
+               // TODO pridat chybovy kod 403
+
+               return new JsonResponse($data_for_response);
+           }
         }
     }
 

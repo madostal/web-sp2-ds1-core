@@ -53,12 +53,26 @@ class ds1 extends ds1_base_model
     }
 
     public function setModulesForAdmin($modules) {
-        $this->modules_admin = $modules;
 
         // nacist konfiguraci k modulum = settings_file, kde jsou konstanty pro vsechny moduly
         if ($modules != null)
-            foreach ($modules as $module) {
-                if (isset($module["settings_file"])) {
+            foreach ($modules as $index => $module) {
+
+                $add_module = true;
+
+                // zpracovat jen moduly typu admin_plugin = DS1_MODULE_TYPE_ADMIN_PLUGIN
+                if (array_key_exists("type", $module))
+                    if ($module["type"] == DS1_MODULE_TYPE_ADMIN_PLUGIN) {
+                        // je to ok
+                        $add_module = true;
+                    }
+                    else {
+                        // nepridavat
+                        $add_module = false;
+                    }
+
+
+                if (isset($module["settings_file"]) && $add_module) {
                     //printr($module);
                     $settings_file = DS1_DIR_ADMIN_MODULES_FROM_ADMIN.$module["name"]."/".$module["settings_file"].".php";
                     //printr($settings_file);
@@ -68,7 +82,15 @@ class ds1 extends ds1_base_model
                         include_once($settings_file);
                     }
                 }
+
+                if ($add_module == false) {
+                    // nechci pridavat, tak vyhodim ze seznamu modulu = vyhodit api moduly
+                    unset($modules[$index]);
+                }
             }
+
+        // pridat az na konci
+        $this->modules_admin = $modules;
     }
 
     public function getModulesForAdmin() {
