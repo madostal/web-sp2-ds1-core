@@ -134,6 +134,7 @@ class user_admin_controller extends ds1_base_controller
         // zprava o pokusu o prihlaseni
         $result_msg = "";
         $result_ok = false;
+        $status = Response::HTTP_OK; // status odpovedi
 
         // TEST, jestli JE uzivatel prihlasen. Pokud ANO, tak vratit ze ok
         if ($this->ds1->user_admin->isAdminLogged()) {
@@ -163,6 +164,7 @@ class user_admin_controller extends ds1_base_controller
             $ok = false;
             $result_ok = false;
             $result_msg = "API token error.";
+            $status = Response::HTTP_FORBIDDEN;
         }
 
         // zavolat model, pokud sedi api token
@@ -180,6 +182,7 @@ class user_admin_controller extends ds1_base_controller
                     // chyba, nepovedlo se prihlasit
                     $result_msg = "Špatný uživatel nebo heslo";
                     $result_ok = false;
+                    $status = Response::HTTP_FORBIDDEN;
                 }
         }
 
@@ -189,10 +192,10 @@ class user_admin_controller extends ds1_base_controller
         $data_for_response = json_encode($result);
 
         // vratit v html
-        //return new Response($data_for_response);
+        //return new Response($data_for_response, $status);
 
-        // vratit json
-        return new JsonResponse($data_for_response);
+        // vratit json - vcetne stavoveho kodu
+        return new JsonResponse($data_for_response, $status);
     }
 
 
