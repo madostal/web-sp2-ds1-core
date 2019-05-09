@@ -5,6 +5,7 @@ namespace ds1\core;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 // use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use Twig_Loader_Filesystem;
@@ -295,9 +296,9 @@ class ds1_base_controller
                $data_for_response["result_ok"] = false;
                $data_for_response["result_msg"] = "Error: user not logged.";
 
-               // TODO pridat chybovy kod 403
-
-               return new JsonResponse($data_for_response);
+               // vygenerovat odpoved a pridat status code
+               $response = new JsonResponse($data_for_response, Response::HTTP_FORBIDDEN);
+               return $response;
            }
         }
     }
